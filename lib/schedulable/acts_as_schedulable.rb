@@ -88,7 +88,8 @@ module Schedulable
               max_period = Schedulable.config.max_build_period || 1.year
               max_date = now + max_period
               
-              max_date = terminating ? [max_date, schedule.last.to_time].min : max_date
+              last_date = schedule.last.try(:to_time) || max_date
+              max_date = terminating ? [max_date, last_date].min : max_date
               
               max_count = Schedulable.config.max_build_count || 100
               max_count = terminating && schedule.remaining_occurrences.any? ? [max_count, schedule.remaining_occurrences.count].min : max_count
@@ -145,7 +146,7 @@ module Schedulable
                 if existing_records.any?
                   # Overwrite existing records
                   existing_records.each do |existing_record|
-                    if !occurrences_records.update(existing_record.id, date: occurrence.to_datetime)
+                    if !occurrences_records.unscoped.update(existing_record.id, date: occurrence.to_datetime)
                       puts 'An error occurred while saving an existing occurrence record'
                     end
                   end
