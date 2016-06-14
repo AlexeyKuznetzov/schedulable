@@ -14,7 +14,7 @@ module Schedulable
       validates_presence_of :time
       validates_presence_of :date, if: Proc.new { |schedule| schedule.rule == 'singular' }
       validate :validate_day, if: Proc.new { |schedule| schedule.rule == 'weekly' }
-      validate :validate_day_of_week, if: Proc.new { |schedule| schedule.rule == 'monthly' }
+      #validate :validate_day_of_week, if: Proc.new { |schedule| schedule.rule == 'monthly' }
 
       def to_icecube
         return @schedule
