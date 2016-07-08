@@ -49,14 +49,18 @@ module Schedulable
         self.interval||= 1
         self.count||= 0
 
-        time = Date.today.to_time(:utc)
+        time = Date.today.to_time :utc
         if self.time.present?
           time = time + self.time.seconds_since_midnight.seconds
         end
         time_string = time.strftime("%d-%m-%Y %I:%M %p")
         time = Time.zone.parse(time_string)
 
-        @schedule = IceCube::Schedule.new(time)
+        start_datetime = ActiveSupport::TimeZone[time.zone].local date.year,
+          date.month, date.day, time.hour, time.min, time.sec
+
+
+        @schedule = IceCube::Schedule.new start_datetime
 
         if self.rule && self.rule != 'singular'
 
