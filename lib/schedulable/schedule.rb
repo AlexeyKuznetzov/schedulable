@@ -56,9 +56,9 @@ module Schedulable
         time_string = time.strftime("%d-%m-%Y %I:%M %p")
         time = Time.zone.parse(time_string)
 
+        date = self.date || Date.today
         start_datetime = ActiveSupport::TimeZone[time.zone].local date.year,
           date.month, date.day, time.hour, time.min, time.sec
-
 
         @schedule = IceCube::Schedule.new start_datetime
 
