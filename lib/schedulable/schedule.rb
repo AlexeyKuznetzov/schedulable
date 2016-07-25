@@ -40,7 +40,7 @@ module Schedulable
       end
 
       def self.param_names
-        [:id, :date, :time, :rule, :until, :count, :interval, day: [], day_of_week: [monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [], sunday: []], day_of_month: []]
+        [:id, :date, :time, :rule, :until, :count, :interval, day: [], day_of_week: [monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [], sunday: []], day_of_month: [], day_of_year: []]
       end
 
       def update_schedule()
@@ -87,6 +87,8 @@ module Schedulable
               #   days[weekday.to_sym] = value.reject(&:empty?).map { |x| x.to_i }
               # end
               rule.day_of_month day_of_month
+            elsif self.rule == 'yearly'
+              rule.day_of_year day_of_year
             end
           end
           @schedule.add_recurrence_rule(rule)
