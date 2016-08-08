@@ -1,7 +1,6 @@
 module Schedulable
   module Model
-    class Schedule  < ActiveRecord::Base
-
+    class Schedule < ActiveRecord::Base
       serialize :day
       serialize :day_of_week, Hash
 
@@ -14,10 +13,10 @@ module Schedulable
       validates_presence_of :time
       validates_presence_of :date, if: Proc.new { |schedule| schedule.rule == 'singular' }
       validate :validate_day, if: Proc.new { |schedule| schedule.rule == 'weekly' }
-      #validate :validate_day_of_week, if: Proc.new { |schedule| schedule.rule == 'monthly' }
+      validate :validate_day_of_week, if: Proc.new { |schedule| schedule.rule == 'monthly_by_weekdays' }
 
       def to_icecube
-        return @schedule
+        @schedule
       end
 
       def to_s
@@ -43,8 +42,7 @@ module Schedulable
         [:id, :date, :time, :rule, :until, :count, :interval, day: [], day_of_week: [monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [], sunday: []], day_of_month: [], day_of_year: []]
       end
 
-      def update_schedule()
-
+      def update_schedule
         self.rule||= "singular"
         self.interval||= 1
         self.count||= 0
@@ -53,6 +51,7 @@ module Schedulable
         if self.time.present?
           time = time + self.time.seconds_since_midnight.seconds
         end
+
         time_string = time.strftime("%d-%m-%Y %I:%M %p")
         time = Time.zone.parse(time_string)
 
@@ -63,7 +62,6 @@ module Schedulable
         @schedule = IceCube::Schedule.new start_datetime
 
         if self.rule && self.rule != 'singular'
-
           self.interval = self.interval.present? ? self.interval.to_i : 1
 
           rule = IceCube::Rule.send("#{self.rule}", self.interval)
@@ -83,23 +81,25 @@ module Schedulable
                 rule.day(day.to_sym)
               end
             elsif self.rule == 'monthly'
-              # day_of_week.each do |weekday, value|
-              #   days[weekday.to_sym] = value.reject(&:empty?).map { |x| x.to_i }
-              # end
               rule.day_of_month day_of_month
+            elsif self.rule == 'monthly_by_weekdays'
+              day_of_week.each do |weekday, value|
+                days[weekday.to_sym] = value.reject(&:empty?).map { |x| x.to_i }
+              end
             elsif self.rule == 'yearly'
               rule.day_of_year day_of_year
             end
           end
+
           @schedule.add_recurrence_rule(rule)
         end
-
       end
 
       private
 
       def validate_day
         day.reject! { |c| c.empty? }
+
         if !day.any?
           errors.add(:day, :empty)
         end

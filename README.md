@@ -43,7 +43,7 @@ The schedule-object respects the following attributes.
     <th>Name</th><th>Type</th><th>Description</th>
   </tr>
   <tr>
-    <td>rule</td><td>String</td><td>One of 'singular', 'daily', 'weekly', 'monthly'</td>
+    <td>rule</td><td>String</td><td>One of 'singular', 'daily', 'weekly', 'monthly', 'monthly_by_weekdays', 'yearly'</td>
   </tr>
   <tr>
     <td>date</td><td>Date</td><td>The date-attribute is used for singular events and also as startdate of the schedule</td>
@@ -56,6 +56,9 @@ The schedule-object respects the following attributes.
   </tr>
   <tr>
     <td>day_of_week</td><td>Hash</td><td>Day of nth week. A hash of weekday-names, containing arrays with indices, i.e. {:monday => [1, -1]} ('every first and last monday in month')</td>
+  </tr>
+  <tr>
+    <td>day_of_month</td><td>Array</td><td>List of months days</td>
   </tr>
   <tr>
     <td>interval</td><td>Integer</td><td>Specifies the interval of the recurring rule, i.e. every two weeks</td>
