@@ -74,8 +74,11 @@ module Schedulable
             rule.count(self.count.to_i)
           end
 
+          self.day ||= []
+
           if self.day
             days = self.day.reject(&:empty?)
+
             if self.rule == 'weekly'
               days.each do |day|
                 rule.day(day.to_sym)
