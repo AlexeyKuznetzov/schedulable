@@ -86,9 +86,13 @@ module Schedulable
             elsif self.rule == 'monthly'
               rule.day_of_month day_of_month
             elsif self.rule == 'monthly_by_weekdays'
+              days = {}
               day_of_week.each do |weekday, value|
                 days[weekday.to_sym] = value.reject(&:empty?).map { |x| x.to_i }
               end
+
+              self.rule = 'monthly'
+              rule.day_of_week days
             elsif self.rule == 'yearly'
               rule.day_of_year day_of_year
             end
