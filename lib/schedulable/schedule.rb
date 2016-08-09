@@ -64,7 +64,9 @@ module Schedulable
         if self.rule && self.rule != 'singular'
           self.interval = self.interval.present? ? self.interval.to_i : 1
 
-          rule = IceCube::Rule.send("#{self.rule}", self.interval)
+          sended_rule = self.rule
+          sended_rule = 'monthly' if self.rule == 'monthly_by_weekdays'
+          rule = IceCube::Rule.send sended_rule, self.interval
 
           if self.until
             rule.until(self.until)
